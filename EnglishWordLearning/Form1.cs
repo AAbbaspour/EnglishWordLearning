@@ -23,7 +23,7 @@ namespace EnglishWordLearning
             InitializeComponent();
         }
 
-        private IWebDriver driver = new PhantomJSDriver();
+        private IWebDriver driver = new ChromeDriver();
         List<Word> wordlist = new List<Word>();
         DictioneryDataset IKnowWordsDs = new DictioneryDataset();
         DictioneryDataset IgnoreWordsDs = new DictioneryDataset();
@@ -244,7 +244,7 @@ namespace EnglishWordLearning
                 Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
                 button1.Enabled = true;
 
-                if (counter >= 100)
+                if (counter >= 1500)
                     break;
             }
         }
