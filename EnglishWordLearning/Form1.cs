@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Common.DTO;
 using OpenQA.Selenium.PhantomJS;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -131,18 +132,13 @@ namespace EnglishWordLearning
         private void button2_Click(object sender, EventArgs e)
         {
             // --------------  load dictionery 
-
             FileInfo fileInfo = new System.IO.FileInfo(textBox3.Text);
-            String DictioneryFileName = fileInfo.Name.Replace(fileInfo.Extension, "").Replace(".", "_") + "Dictionery.xml";
-            DictioneryDataset ds = new DictioneryDataset();
-            if (System.IO.File.Exists(System.IO.Path.Combine(fileInfo.DirectoryName, DictioneryFileName)))
+            List<DicEntity> allDic = Business.Dictionery.instance.GetAll();
+
+            foreach (DicEntity dicEntity in allDic)
             {
-                ds.ReadXml(System.IO.Path.Combine(fileInfo.DirectoryName, DictioneryFileName));
-                for (int i = 0; i < ds.DicTable.Rows.Count; i++)
-                {
-                    if (!MyDic.ContainsKey(ds.DicTable[i].Word))
-                        MyDic.Add(ds.DicTable[i].Word, ds.DicTable[i].Meaning);
-                }
+                if (!MyDic.ContainsKey(dicEntity.Word))
+                    MyDic.Add(dicEntity.Word, dicEntity.Meaning);
             }
 
             //------------------------------------
@@ -191,7 +187,8 @@ namespace EnglishWordLearning
             wordlist = words.GroupBy(g => g.Text).Select(group => new Word()
             {
                 Text = group.Key,
-                Count = group.Count()
+                Count = group.Count(),
+                Meaning = MyDic.ContainsKey(group.Key) ? MyDic[group.Key] : ""
             }).OrderByDescending(o => o.Count).ToList();
 
 
@@ -209,46 +206,54 @@ namespace EnglishWordLearning
 
         private void button3_Click(object sender, EventArgs e)
         {
+
             int counter = 0;
             foreach (Word word in wordlist)
             {
-                if (!MyDic.ContainsKey(word.Text))
+                if (String.IsNullOrEmpty(word.Meaning))
                 {
-                    counter++;
-                    this.Text = counter.ToString();
-                }
-                textBox1.Text = word.Text;
-                word.Meaning = MyDic.ContainsKey(word.Text) ? MyDic[word.Text] : GetFrom_amdzSite(word.Text);
-                textBox2.Text = word.Meaning;
-                if (string.IsNullOrEmpty(word.Meaning))
-                {
-                    if (word.Text.EndsWith("ed")) word.Text = word.Text.Substring(0, word.Text.Length - 2);
-                    if (word.Text.EndsWith("’s")) word.Text = word.Text.Substring(0, word.Text.Length - 2);
-                    if (word.Text.EndsWith("s")) word.Text = word.Text.Substring(0, word.Text.Length - 1);
+                    if (!MyDic.ContainsKey(word.Text))
+                    {
+                        counter++;
+                        this.Text = counter.ToString();
+                    }
+                    textBox1.Text = word.Text;
+                    word.Meaning = MyDic.ContainsKey(word.Text) ? MyDic[word.Text] : GetAndUpdateDicWord(word.Text);
+                    textBox2.Text = word.Meaning;
+                    if (string.IsNullOrEmpty(word.Meaning))
+                    {
+                        if (word.Text.EndsWith("ed")) word.Text = word.Text.Substring(0, word.Text.Length - 2);
+                        if (word.Text.EndsWith("’s")) word.Text = word.Text.Substring(0, word.Text.Length - 2);
+                        if (word.Text.EndsWith("s")) word.Text = word.Text.Substring(0, word.Text.Length - 1);
 
+
+                        button1.Enabled = false;
+                        Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
+                        button1.Enabled = true;
+                        textBox1.Text = word.Text;
+                        word.Meaning = MyDic.ContainsKey(word.Text) ? MyDic[word.Text] : GetAndUpdateDicWord(word.Text);
+                        textBox2.Text = word.Meaning;
+                    }
 
                     button1.Enabled = false;
                     Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
                     button1.Enabled = true;
-                    textBox1.Text = word.Text;
-                    word.Meaning = MyDic.ContainsKey(word.Text) ? MyDic[word.Text] : GetFrom_amdzSite(word.Text);
-                    textBox2.Text = word.Meaning;
+
+                    if (counter >= 400)
+                        break;
                 }
 
-
-
-
                 RefreshGrid();
-                dataGridView1.Refresh(); this.Refresh();
-                button1.Enabled = false;
-                Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
-                button1.Enabled = true;
 
-                if (counter >= 1500)
-                    break;
             }
         }
 
+        public String GetAndUpdateDicWord(String word)
+        {
+            string Result = GetFrom_amdzSite(word);
+            Business.Dictionery.instance.AddWord(new DicEntity() { Word = word, Meaning = Result });
+            return Result;
+        }
         private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             Word firstOrDefault = wordlist.Where(w => w.Text == dataGridView1[0, e.RowIndex].Value.ToString()).FirstOrDefault();
@@ -299,5 +304,7 @@ namespace EnglishWordLearning
 
             Dic.WriteXml(System.IO.Path.Combine(fileInfo.DirectoryName, FileName));
         }
+
+
     }
 }

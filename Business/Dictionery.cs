@@ -9,19 +9,25 @@ namespace Business
     {
         public readonly static Dictionery instance = new Dictionery();
 
-        public static List<Common.DTO.DicEntity> GetAll()
+        public List<Common.DTO.DicEntity> GetAll()
         {
             return DataAccess.Dictionery.instance.GetAll();
         }
 
-        public static void AddWord(Common.DTO.DicEntity dic)
+        public void AddWord(Common.DTO.DicEntity dic)
         {
-            DataAccess.Dictionery.instance.AddWord(dic);
+            if (!IsContainsWord(dic.Word))
+                DataAccess.Dictionery.instance.AddWord(dic);
         }
 
-        public static Common.DTO.DicEntity getByWord(String Word)
+        public Common.DTO.DicEntity getByWord(String Word)
         {
             return DataAccess.Dictionery.instance.getByWord(Word);
+        }
+
+        public bool IsContainsWord(String Word)
+        {
+            return getByWord(Word) != null;
         }
     }
 }

@@ -12,12 +12,12 @@ namespace DataAccess
     {
         public readonly static Dictionery instance = new Dictionery();
 
-        private  SQLiteConnection Conn = new SQLiteConnection(@"Data Source=D:\GithubProjectsEnglishWordLearning\EnglishWordLearning\bin\Debug\Dic.db");
+        private  SQLiteConnection Conn = new SQLiteConnection(@"Data Source="  + @"C:\Users\afshin_abbaspour\source\repos\EnglishWordLearning\EnglishWordLearning\bin\Debug\" + "Dic.db");
 
 
         public List<Common.DTO.DicEntity> GetAll()
         {
-            SQLiteDataAdapter SDA = new SQLiteDataAdapter("Select * from Dictionery", Conn);
+            SQLiteDataAdapter SDA = new SQLiteDataAdapter("Select * from Dictionary", Conn);
             if (Conn.State != ConnectionState.Open) Conn.Open();
             DicDataset Ds = new DicDataset();
             SDA.Fill(Ds.Dictionery);
@@ -36,7 +36,7 @@ namespace DataAccess
 
         public  Common.DTO.DicEntity getByWord(String Word)
         {
-            SQLiteDataAdapter SDA = new SQLiteDataAdapter("Select * from Dictionery where Word = " + Word, Conn);
+            SQLiteDataAdapter SDA = new SQLiteDataAdapter("Select * from Dictionary where Word = \"" + Word + "\"", Conn);
             if (Conn.State != ConnectionState.Open) Conn.Open();
             DicDataset Ds = new DicDataset();
             SDA.Fill(Ds.Dictionery);
