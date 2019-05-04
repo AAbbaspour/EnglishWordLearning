@@ -24,7 +24,7 @@ namespace EnglishWordLearning
             InitializeComponent();
         }
 
-        private IWebDriver driver = new ChromeDriver();
+        private IWebDriver driver = new PhantomJSDriver();
         List<Word> wordlist = new List<Word>();
         DictioneryDataset IKnowWordsDs = new DictioneryDataset();
         DictioneryDataset IgnoreWordsDs = new DictioneryDataset();
