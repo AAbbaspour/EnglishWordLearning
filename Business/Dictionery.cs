@@ -16,8 +16,18 @@ namespace Business
 
         public void AddWord(Common.DTO.DicEntity dic)
         {
-            if (!IsContainsWord(dic.Word))
-                DataAccess.Dictionery.instance.AddWord(dic);
+            try
+            {
+                if (!IsContainsWord(dic.Word))
+                    DataAccess.Dictionery.instance.AddWord(dic);
+            }
+            catch (Exception ex)
+            {
+
+               // Tof
+               
+            }
+
         }
 
         public Common.DTO.DicEntity getByWord(String Word)

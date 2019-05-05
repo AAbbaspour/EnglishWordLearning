@@ -131,8 +131,10 @@ namespace EnglishWordLearning
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // --------------  load dictionery 
-            FileInfo fileInfo = new System.IO.FileInfo(textBox3.Text);
+            if (String.IsNullOrEmpty(textBox3.Text))
+               textBox3_DoubleClick(sender, e);
+             // --------------  load dictionery 
+             FileInfo fileInfo = new System.IO.FileInfo(textBox3.Text);
             List<DicEntity> allDic = Business.Dictionery.instance.GetAll();
 
             foreach (DicEntity dicEntity in allDic)
@@ -234,7 +236,7 @@ namespace EnglishWordLearning
                         word.Meaning = MyDic.ContainsKey(word.Text) ? MyDic[word.Text] : GetAndUpdateDicWord(word.Text);
                         textBox2.Text = word.Meaning;
                     }
-
+                    this.Refresh();
                     button1.Enabled = false;
                     Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
                     button1.Enabled = true;
