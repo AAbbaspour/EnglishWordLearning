@@ -184,7 +184,7 @@ namespace EnglishWordLearning
             string[] Signs = System.IO.File.ReadAllLines(System.IO.Path.Combine(Application.StartupPath, "Signs.txt"));
             Signs.ToList().ForEach(f => readAllText = readAllText.Replace(f, " "));
 
-            List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength >= 3).ToList();
+            List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
 
             wordlist = words.GroupBy(g => g.Text).Select(group => new Word()
             {
