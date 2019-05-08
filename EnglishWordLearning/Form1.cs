@@ -241,7 +241,7 @@ namespace EnglishWordLearning
                     Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
                     button1.Enabled = true;
 
-                    if (counter >= 400)
+                    if (counter >= 800)
                         break;
                 }
 
