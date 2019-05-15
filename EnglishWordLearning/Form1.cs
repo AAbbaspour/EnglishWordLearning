@@ -164,9 +164,8 @@ namespace EnglishWordLearning
                     RemoveWorsd.Add(RemoveWordDataset.DicTable[i].Word);
                     AddToIgnore(RemoveWordDataset.DicTable[i].Word);
                 }
-
-
             }
+
             if (System.IO.File.Exists(System.IO.Path.Combine(fileInfo.DirectoryName, IKnowWordsFileName)))
             {
                 RemoveWordDataset = new DictioneryDataset();
@@ -178,13 +177,15 @@ namespace EnglishWordLearning
 
                 }
             }
+
             //************************** remove Ignore and IKnow ********************
 
 
             string[] Signs = System.IO.File.ReadAllLines(System.IO.Path.Combine(Application.StartupPath, "Signs.txt"));
             Signs.ToList().ForEach(f => readAllText = readAllText.Replace(f, " "));
 
-            List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
+            //List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
+            List<Word> words = readAllText.Replace("—", " ").Split(Environment.NewLine.ToCharArray()).Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w=> w.TextLength < 33).OrderBy(o=> o.Text).ToList();
 
             wordlist = words.GroupBy(g => g.Text).Select(group => new Word()
             {
@@ -241,7 +242,7 @@ namespace EnglishWordLearning
                     Thread.Sleep(MyDic.ContainsKey(word.Text) ? 0 : 4000);
                     button1.Enabled = true;
 
-                    if (counter >= 800)
+                    if (counter >= 2842)
                         break;
                 }
 

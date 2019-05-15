@@ -129,7 +129,3 @@ yes
 one
 new
 www
-iranian
-government
-iran
-two
