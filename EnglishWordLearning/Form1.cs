@@ -132,9 +132,9 @@ namespace EnglishWordLearning
         private void button2_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(textBox3.Text))
-               textBox3_DoubleClick(sender, e);
-             // --------------  load dictionery 
-             FileInfo fileInfo = new System.IO.FileInfo(textBox3.Text);
+                textBox3_DoubleClick(sender, e);
+            // --------------  load dictionery 
+            FileInfo fileInfo = new System.IO.FileInfo(textBox3.Text);
             List<DicEntity> allDic = Business.Dictionery.instance.GetAll();
 
             foreach (DicEntity dicEntity in allDic)
@@ -185,7 +185,7 @@ namespace EnglishWordLearning
             Signs.ToList().ForEach(f => readAllText = readAllText.Replace(f, " "));
 
             //List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
-            List<Word> words = readAllText.Replace("—", " ").Split(Environment.NewLine.ToCharArray()).Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w=> w.TextLength < 33).OrderBy(o=> o.Text).ToList();
+            List<Word> words = readAllText.Replace("—", " ").Split(Environment.NewLine.ToCharArray()).Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => w.TextLength < 33).OrderBy(o => o.Text).ToList();
 
             wordlist = words.GroupBy(g => g.Text).Select(group => new Word()
             {
@@ -244,9 +244,9 @@ namespace EnglishWordLearning
 
                     if (counter >= 2842)
                         break;
-                }
 
-                RefreshGrid();
+                    RefreshGrid();
+                }
 
             }
         }

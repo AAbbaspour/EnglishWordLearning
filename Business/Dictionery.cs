@@ -19,13 +19,18 @@ namespace Business
             try
             {
                 if (!IsContainsWord(dic.Word))
+                {
+                    dic.Word = dic.Word.Replace("'", "''");
+                    dic.Meaning =  dic.Meaning.Replace("'", "''");
                     DataAccess.Dictionery.instance.AddWord(dic);
+                }
+
             }
             catch (Exception ex)
             {
 
-               // Tof
-               
+                // Tof
+
             }
 
         }
