@@ -40,10 +40,8 @@ namespace EnglishWordLearning
 
         private void button1_Click(object sender, EventArgs e)
         {
-            textBox2.Text = GetFrom_amdzSite(textBox1.Text);
-            button1.Enabled = false;
-            Thread.Sleep(4000);
-            button1.Enabled = true;
+            String MeaningFromDicTionery = Business.Dictionery.instance.getByWord(textBox1.Text.Trim()).Meaning;
+            textBox2.Text = String.IsNullOrEmpty(MeaningFromDicTionery) ?  GetFrom_amdzSite(textBox1.Text) : MeaningFromDicTionery;
         }
 
         private void AddToIKnow(String str)
@@ -74,6 +72,10 @@ namespace EnglishWordLearning
 
                 IWebDriver IframeDriver = driver.SwitchTo().Frame(driver.FindElement(By.Name("result")));
                 IWebElement ResultElement = IframeDriver.FindElement(By.CssSelector("body > div .definition"));
+
+                button1.Enabled = false;
+                Thread.Sleep(4000);
+                button1.Enabled = true;
 
                 return ResultElement.Text;
             }
@@ -184,20 +186,21 @@ namespace EnglishWordLearning
             string[] Signs = System.IO.File.ReadAllLines(System.IO.Path.Combine(Application.StartupPath, "Signs.txt"));
             Signs.ToList().ForEach(f => readAllText = readAllText.Replace(f, " "));
 
-            //List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
-            List<Word> words = readAllText.Replace("—", " ").Split(Environment.NewLine.ToCharArray()).Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => w.TextLength < 33).OrderBy(o => o.Text).ToList();
+            List<Word> words = readAllText.Replace("—", " ").Split(' ').Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => !RemoveWorsd.Any(a => a.ToLower().Trim() == w.Text.Trim()) && w.TextLength > 3).ToList();
+            // List<Word> words = readAllText.Replace("—", " ").Split(Environment.NewLine.ToCharArray()).Select(s => new Word() { Text = s.ToLower().Trim() }).Where(w => w.TextLength < 33).OrderBy(o => o.Text).ToList();
 
             wordlist = words.GroupBy(g => g.Text).Select(group => new Word()
             {
                 Text = group.Key,
                 Count = group.Count(),
-                Meaning = MyDic.ContainsKey(group.Key) ? MyDic[group.Key] : ""
+                Meaning = MyDic.ContainsKey(group.Key) ? MyDic[group.Key] : Business.Dictionery.instance.getByWord(group.Key).Meaning
             }).OrderByDescending(o => o.Count).ToList();
 
 
             dataGridView1.DataSource = wordlist;
 
             label1.Text = "Records = " + dataGridView1.RowCount;
+            label2.Text = "Empty Meaning = " + wordlist.Where(w => String.IsNullOrEmpty(w.Meaning)).Count().ToString();
         }
 
         private void textBox3_DoubleClick(object sender, EventArgs e)
@@ -308,6 +311,26 @@ namespace EnglishWordLearning
             Dic.WriteXml(System.IO.Path.Combine(fileInfo.DirectoryName, FileName));
         }
 
+        private void Label2_DoubleClick(object sender, EventArgs e)
+        {
 
+        }
+
+        private void Label2_Click(object sender, EventArgs e)
+        {
+            ShowWordList frm = new ShowWordList(wordlist.Where(w => String.IsNullOrEmpty(w.Meaning)).ToList());
+            frm.ShowDialog();
+        }
+
+        private void Label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label1_DoubleClick(object sender, EventArgs e)
+        {
+            ShowWordList frm = new ShowWordList(wordlist.Where(w => !String.IsNullOrEmpty(w.Meaning) ).ToList());
+            frm.ShowDialog();
+        }
     }
 }

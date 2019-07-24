@@ -21,7 +21,7 @@ namespace Business
                 if (!IsContainsWord(dic.Word))
                 {
                     dic.Word = dic.Word.Replace("'", "''");
-                    dic.Meaning =  dic.Meaning.Replace("'", "''");
+                    dic.Meaning = dic.Meaning.Replace("'", "''");
                     DataAccess.Dictionery.instance.AddWord(dic);
                 }
 
@@ -37,7 +37,25 @@ namespace Business
 
         public Common.DTO.DicEntity getByWord(String Word)
         {
-            return DataAccess.Dictionery.instance.getByWord(Word);
+            Common.DTO.DicEntity dicEntity = DataAccess.Dictionery.instance.getByWord(Word);
+            if (dicEntity == null & Word.EndsWith("s"))
+                dicEntity = DataAccess.Dictionery.instance.getByWord(Word.Substring(0, Word.Length - 1));
+
+            if (dicEntity == null & Word.EndsWith("ed"))
+            {
+                dicEntity = DataAccess.Dictionery.instance.getByWord(Word.Substring(0, Word.Length - 1));
+                if (dicEntity == null)
+                {
+                    dicEntity = DataAccess.Dictionery.instance.getByWord(Word.Substring(0, Word.Length - 2));
+                }
+            }
+
+            if (dicEntity == null & Word.EndsWith("ing"))
+                dicEntity = DataAccess.Dictionery.instance.getByWord(Word.Substring(0, Word.Length - 3));
+
+            if (dicEntity == null)
+                dicEntity = new Common.DTO.DicEntity() { Word = Word, Meaning = "" };
+            return dicEntity;
         }
 
         public bool IsContainsWord(String Word)
